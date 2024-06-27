@@ -1,0 +1,2 @@
+ollama pull mistral:instruct
+ollama pull llava:7b
