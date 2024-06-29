@@ -124,9 +124,9 @@ def save_transcription(video_id, bucket_name):
 
 def main():
     # ID del canal de YouTube (puedes encontrarlo en la URL del canal)
-    channel_id = 'UCTJNmeP0HiOU4-qOMNVNoGA'  # Reemplaza con el ID del canal que desees
-    start_date = datetime(2023, 12, 25).isoformat("T") + "Z"
-    end_date = datetime(2023, 12, 30).isoformat("T") + "Z"
+    channel_id = "UC8cJQkY_XQv3YVaRIyGmQWA"  
+    start_date = datetime(2024, 6, 25).isoformat("T") + "Z"
+    end_date = datetime(2024, 6, 30).isoformat("T") + "Z"
     bucket_name = 'hackbcnai2024'  # Reemplaza con el nombre de tu bucket de Google Cloud Storage
 
     youtube = get_youtube_client(API_KEY)
