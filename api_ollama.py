@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 #import qdrant_client
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_mistralai.chat_models import ChatMistralAI
-from langchain_mistralai.embeddings import MistralAIEmbeddings
+#from langchain_mistralai.chat_models import ChatMistralAI
+#from langchain_mistralai.embeddings import MistralAIEmbeddings
 
 #from langchain_core.messages import HumanMessage
 from langchain_qdrant import Qdrant
