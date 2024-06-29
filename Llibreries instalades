@@ -8,3 +8,12 @@ pip install pytube youtube-transcript-api
 
 YT PROVA 2
 pip install google-api-python-client pytube youtube-transcript-api
+
+
+
+"""
+client_genai = OpenAI(
+        base_url="http://localhost:11434/v1",
+        api_key="ollama"
+    )
+"""

@@ -3,10 +3,11 @@ import streamlit as st
 import requests
 import json
 st.title('Your copilot to prepare your next day at school')
-question = st.text_input("What do you want to do", "")
+question = st.text_area(height=100,label="What is your question", value="")
 # topic = st.text_input("Tematica", "")
 if st.button("Ask a question"):
-    st.write("The current question is \"", question+"\"")
+    #st.write("Querying the repository ... \"", question1+"\"")
+    st.write("Querying the repository ... \"")
     url = "http://127.0.0.1:8000/query_ai"
 
     payload = json.dumps({
