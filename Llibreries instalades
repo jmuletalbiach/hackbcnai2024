@@ -1,2 +1,10 @@
 #Yt descarregar
+YT PROVA 1
+
+
 pip install pytube youtube-transcript-api
+
+
+
+YT PROVA 2
+pip install google-api-python-client pytube youtube-transcript-api
