@@ -7,7 +7,7 @@ question = st.text_input("What do you want to do", "")
 topic = st.text_input("Tematica", "")
 if st.button("Ask a question"):
     st.write("The current question is \"", question+"\"")
-    url = "http://127.0.0.1:8000/ask_localai"
+    url = "http://127.0.0.1:8000/query_ai"
 
     payload = json.dumps({
       "query": question

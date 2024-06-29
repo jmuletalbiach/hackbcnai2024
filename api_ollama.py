@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 #import qdrant_client
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_mistralai.chat_models import ChatMistralAI
+from langchain_mistralai.embeddings import MistralAIEmbeddings
+
 #from langchain_core.messages import HumanMessage
 from langchain_qdrant import Qdrant
 from qdrant_client import QdrantClient
@@ -30,10 +33,20 @@ hf = HuggingFaceEmbeddings(
 )
 
 
+## Client Ollama
+
 client_genai = OpenAI(
         base_url="http://localhost:11434/v1",
         api_key="ollama"
     )
+
+##Client Mistral
+# Define LLM
+## model = ChatMistralAI(mistral_api_key=api_key)
+
+##Client 
+
+
 
 if environment_var.qdrant_storage =="cloud":
         client = QdrantClient(
@@ -45,21 +58,16 @@ if environment_var.qdrant_storage =="cloud":
 elif environment_var.qdrant_storage =="local":
         client = QdrantClient("localhost", port=6333)
         print ("qdrant local instance")
-else:
-        client = QdrantClient(path="qdrant/")
-        print ("qdrant folder")
 
-collection_name = "MyCollection"
+collection_name = "SocialEducation"
 qdrant = Qdrant(client, collection_name, hf)
-
 
 
 app = FastAPI()
 
-
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Init"}
 
 @app.post("/search")
 def search(Item:Item):
@@ -73,8 +81,8 @@ def search(Item:Item):
         list_res.append({"id":i,"path":res.metadata.get("path"),"content":res.page_content})
     return list_res
 
-@app.post("/ask_localai")
-async def ask_localai(Item:Item):
+@app.post("/query_ai")
+async def query_ai(Item:Item):
     query = Item.query
     search_result = qdrant.similarity_search(
         query=query, k=2
