@@ -27,6 +27,7 @@ share/python-wheels/
 MANIFEST
 qdrant/
 environment_var.py
+*.mp4
 
 qdrant_cloud.sample
 

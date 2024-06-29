@@ -30,8 +30,6 @@ youtube_url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'  # Reemplaza con la 
 download_youtube_video(youtube_url)
 
 """
-
-import environment_var
 import os
 from googleapiclient.discovery import build
 from google.cloud import speech_v1p1beta1 as speech
@@ -40,12 +38,9 @@ from pytube import YouTube
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
 from datetime import datetime, timedelta
 
-
-
-
 # Configura tu clave de API de YouTube y credenciales de Google Cloud
-API_KEY = environment_var.variable_key_ricard  # Revariable_key_ricard emplaza con tu clave de API de YouTube
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = environment_var.variable_ruta_credentials  # Reemplaza con la ruta a tu archivo JSON de credenciales
+API_KEY = "AIzaSyAXXzvVwlb-v4-DoZDz4OL_BZrJrm37FSo"  # Reemplaza con tu clave de API de YouTube
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "C:\\Users\\jmule\\prova\\hardy-antonym-427911-g8-1a6c0736010a.json"  # Reemplaza con la ruta a tu archivo JSON de credenciales
 
 def get_youtube_client(api_key):
     return build('youtube', 'v3', developerKey=api_key)
@@ -77,11 +72,15 @@ def download_audio(video_id):
     audio_stream = yt.streams.filter(only_audio=True).first()
     audio_filename = f"{video_title}.mp4"
     audio_stream.download(filename=audio_filename)
+    if not os.path.exists(audio_filename):
+        raise FileNotFoundError(f"El archivo de audio {audio_filename} no fue descargado correctamente.")
     return audio_filename, video_title
 
 def convert_audio_to_wav(audio_filename):
     wav_filename = audio_filename.replace(".mp4", ".wav")
     os.system(f"ffmpeg -i {audio_filename} -ac 1 -ar 16000 {wav_filename}")
+    if not os.path.exists(wav_filename):
+        raise FileNotFoundError(f"El archivo WAV {wav_filename} no se creó correctamente.")
     return wav_filename
 
 def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
@@ -125,10 +124,10 @@ def save_transcription(video_id, bucket_name):
 
 def main():
     # ID del canal de YouTube (puedes encontrarlo en la URL del canal)
-    channel_id = 'UCy-EInfqJ08c_hU5VFzcODQ'  # Reemplaza con el ID del canal que desees
-    start_date = datetime(2007, 1, 1).isoformat("T") + "Z"
-    end_date = datetime(2023, 12, 31).isoformat("T") + "Z"
-    bucket_name = 'tu-nombre-de-bucket'  # Reemplaza con el nombre de tu bucket de Google Cloud Storage
+    channel_id = 'UCTJNmeP0HiOU4-qOMNVNoGA'  # Reemplaza con el ID del canal que desees
+    start_date = datetime(2023, 12, 25).isoformat("T") + "Z"
+    end_date = datetime(2023, 12, 30).isoformat("T") + "Z"
+    bucket_name = 'hackbcnai2024'  # Reemplaza con el nombre de tu bucket de Google Cloud Storage
 
     youtube = get_youtube_client(API_KEY)
     video_ids = get_videos_from_channel(youtube, channel_id, start_date, end_date)
