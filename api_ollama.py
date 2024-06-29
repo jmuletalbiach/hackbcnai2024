@@ -35,7 +35,7 @@ hf = HuggingFaceEmbeddings(
 )
 
 """
-client_genai = OpenAI(
+client = OpenAI(
         base_url="http://localhost:11434/v1",
         api_key="ollama"
     )
@@ -52,12 +52,6 @@ chat_response = client.chat(
     ChatMessage(role="user", content="Diseña una actividad dirigida a niños de 6 a 9 años para reflexionar sobre la construcción de los estereotipos de género, identificar las propias actitudes e ideas preconcebidas y rechazar conductas de menosprecios hacia otras personas")
     ]
 )
-
-##Client Mistral
-# Define LLM
-## model = ChatMistralAI(mistral_api_key=api_key)
-
-##Client 
 
 
 
@@ -116,11 +110,10 @@ async def query_ai(Item:Item):
     messages = [
         rolemsg,
         {"role": "user", "content": "Documents:\n"+context+"\n\nQuestion: "+query},
-       ## {"role": "user", "content": "Capital of France"},
     ]
     print (messages)
 
-    completion = client_genai.chat.completions.create(
+    completion = client.chat.completions.create(
         model="phi3",
         messages=messages,
         temperature=0.2,

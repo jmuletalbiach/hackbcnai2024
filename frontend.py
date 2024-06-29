@@ -7,7 +7,7 @@ question = st.text_area(height=100,label="What is your question", value="")
 # topic = st.text_input("Tematica", "")
 if st.button("Ask a question"):
     #st.write("Querying the repository ... \"", question1+"\"")
-    st.write("Querying the repository ... \"")
+    st.write("Generating answer based on the results in progress...")
     url = "http://127.0.0.1:8000/query_ai"
 
     payload = json.dumps({
@@ -37,9 +37,9 @@ if st.button("Ask a question"):
                 show_docs.append(doc)
     a = 1244
     for doc in show_docs:
-        with st.expander(str(doc['id'])+" - "+doc['path']):
+        with st.expander(str(doc['id'])+" - "+doc['topic']+doc['subtopic']+doc['filename']):
             st.write(doc['content'])
             with open(doc['path'], 'rb') as f:
-                st.download_button("Downlaod file", f, file_name=doc['path'].split('/')[-1],key=a
+                st.download_button("Refernce to source", f, file_name=doc['filename'].split('/')[-1],key=a
                 )
                 a = a + 1
