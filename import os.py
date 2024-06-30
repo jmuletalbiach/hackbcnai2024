@@ -42,21 +42,24 @@ def process_folder(folder_path):
             else:
                 continue
             
-            token_splitter = TokenTextSplitter(chunk_size = 500, chunk_overlap = 50)
-            tokens = token_splitter.split_text(text)
+            try:
+                token_splitter = TokenTextSplitter(chunk_size=500, chunk_overlap=50)
+                tokens = token_splitter.split_text(text)
+            except Exception as e:
+                continue
+       
+            subfolders = os.path.relpath(root, folder_path).split(os.sep)[0:]
+            if len(subfolders)<2:
+                subfolders.extend([' '])
             
             metadata = {
                 'filename': file_name,
-                'folder_path': root,
-                'subfolders': os.path.relpath(root, folder_path).split(os.sep)[1:],
-                'tokens': tokens
+                'subfolders':subfolders
             }
+            print(file_name)
+            print(subfolders)
             text_variable.append(metadata)
 
-if __name__ == '__main__':
-    folder_path = r'C:\Users\MiquelMuletAlarcón\Desktop\Pyhton\ha\hackbcnai2024'
-    processed_data = process_folder(folder_path)
-    print(f"File: {processed_data['filename']}")
-    print(f"Folder: {processed_data['folder_path']}")
-    print(f"SubFolder: {'/'.join(processed_data['subfolders'])}")
-    print(f"Tokens:\n{processed_data['tokens']}")
+
+folder_path = r'C:\Users\MiquelMuletAlarcón\Desktop\Pyhton\ha\hackbcnai2024\docs'
+processed_data = process_folder(folder_path)
