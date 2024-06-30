@@ -72,14 +72,21 @@ def main_indexer(folder_path):
             if not isinstance(text, str):
                 continue
             
-            token_splitter = TokenTextSplitter(chunk_size = 500, chunk_overlap = 50)
-            tokens = token_splitter.split_text(text)
+            subfolders = os.path.relpath(root, folder_path).split(os.sep)[0:]
+            if len(subfolders)<2:
+                subfolders.extend([' '])
+            
+            try:
+                token_splitter = TokenTextSplitter(chunk_size=500, chunk_overlap=50)
+                tokens = token_splitter.split_text(text)
+            except Exception as e:
+                continue
+            
             metadata = []
             #adding path metadata
             for i in range(0,len(tokens)):
                 metadata.append({'filename': file_name})
-                metadata.append({'folder_path': root})
-                metadata.append({'subfolders': os.path.relpath(root, folder_path).split(os.sep)[1:]})
+                metadata.append({'subfolders': subfolders})
             qdrant.add_texts(tokens,metadatas=metadata)
             print(file_name)
     
