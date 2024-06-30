@@ -48,7 +48,7 @@ def main_indexer(folder_path):
         print(client.get_collections())
     
 
-    collection_name = "SocialEducation"
+    collection_name = "SocialEducation2"
     if environment_var.qdrant_clean == "yes":
         if client.collection_exists(collection_name):
             client.delete_collection(collection_name)
