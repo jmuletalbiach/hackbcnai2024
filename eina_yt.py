@@ -30,6 +30,10 @@ youtube_url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'  # Reemplaza con la 
 download_youtube_video(youtube_url)
 
 """
+
+"""
+
+
 import os
 from googleapiclient.discovery import build
 from google.cloud import speech_v1p1beta1 as speech
@@ -39,8 +43,8 @@ from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, No
 from datetime import datetime, timedelta
 
 # Configura tu clave de API de YouTube y credenciales de Google Cloud
-API_KEY = "AIzaSyAXXzvVwlb-v4-DoZDz4OL_BZrJrm37FSo"  # Reemplaza con tu clave de API de YouTube
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "C:\\Users\\jmule\\prova\\hardy-antonym-427911-g8-1a6c0736010a.json"  # Reemplaza con la ruta a tu archivo JSON de credenciales
+API_KEY = "xxxxxxxxxxxxx"  # Reemplaza con tu clave de API de YouTube
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "Cxxxxxxxxxxxxxxxxxx"  # Reemplaza con la ruta a tu archivo JSON de credenciales
 
 def get_youtube_client(api_key):
     return build('youtube', 'v3', developerKey=api_key)
@@ -150,3 +154,105 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+"""
+
+import os
+from google.cloud import speech_v1p1beta1 as speech
+from google.cloud import storage
+from pytube import YouTube
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
+
+# Configura tus credenciales de Google Cloud
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "C:\\Users\\jmule\\prova\\hardy-antonym-427911-g8-1a6c0736010a.json"  # Reemplaza con la ruta a tu archivo JSON de credenciales
+
+def download_audio(video_url):
+    yt = YouTube(video_url)
+    video_title = yt.title.replace("/", "_")  # Reemplazar caracteres no permitidos en nombres de archivo
+    audio_stream = yt.streams.filter(only_audio=True).first()
+    audio_filename = f"{video_title}.mp4"
+    audio_stream.download(filename=audio_filename)
+    if not os.path.exists(audio_filename):
+        raise FileNotFoundError(f"El archivo de audio {audio_filename} no fue descargado correctamente.")
+    return audio_filename, video_title
+
+def convert_audio_to_wav(audio_filename):
+    wav_filename = audio_filename.replace(".mp4", ".wav")
+    os.system(f"ffmpeg -i {audio_filename} -ac 1 -ar 16000 {wav_filename}")
+    if not os.path.exists(wav_filename):
+        raise FileNotFoundError(f"El archivo WAV {wav_filename} no se creó correctamente.")
+    return wav_filename
+
+def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_filename(source_file_name)
+    print(f"Archivo {source_file_name} subido a {destination_blob_name}.")
+
+def upload_text_to_gcs(bucket_name, text_content, destination_blob_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_string(text_content)
+    print(f"Archivo de transcripción subido a {destination_blob_name}.")
+
+def transcribe_gcs(gcs_uri):
+    client = speech.SpeechClient()
+    audio = speech.RecognitionAudio(uri=gcs_uri)
+    config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=16000,
+        language_code="en-US",
+    )
+    operation = client.long_running_recognize(config=config, audio=audio)
+    response = operation.result(timeout=90)
+    transcript = ""
+    for result in response.results:
+        transcript += result.alternatives[0].transcript + "\n"
+    return transcript
+
+def save_transcription(video_url, bucket_name):
+    try:
+        audio_filename, video_title = download_audio(video_url)
+        wav_filename = convert_audio_to_wav(audio_filename)
+        
+        gcs_uri = f"gs://{bucket_name}/{wav_filename}"
+        upload_to_gcs(bucket_name, wav_filename, wav_filename)
+        
+        transcript = transcribe_gcs(gcs_uri)
+        transcript_blob_name = f"{video_title}.txt"
+        upload_text_to_gcs(bucket_name, transcript, transcript_blob_name)
+        print(f"Transcripción guardada en la nube como: {transcript_blob_name}")
+
+    except Exception as e:
+        print(f"Error al procesar el video: {e}")
+
+def main(video_urls, bucket_name):
+    for video_url in video_urls:
+        video_id = video_url.split("v=")[1]
+        # Primero intentamos con youtube_transcript_api
+        try:
+            transcript = YouTubeTranscriptApi.get_transcript(video_id)
+            transcript_text = "\n".join([entry['text'] for entry in transcript])
+            video_title = YouTube(video_url).title.replace("/", "_")
+            transcript_blob_name = f"{video_title}.txt"
+            upload_text_to_gcs(bucket_name, transcript_text, transcript_blob_name)
+            print(f"Transcripción guardada en la nube como: {transcript_blob_name}")
+        except (TranscriptsDisabled, NoTranscriptFound):
+            print("Transcripción no disponible, utilizando Google Cloud Speech-to-Text")
+            save_transcription(video_url, bucket_name)
+        except Exception as e:
+            print(f"Error al obtener la transcripción: {e}")
+
+if __name__ == "__main__":
+    # Lista de URLs de videos de YouTube
+    video_urls = [
+       "https://www.youtube.com/watch?v=TgcgRo_HrHg",
+        "https://www.youtube.com/watch?v=m_3q3XnLlTI",
+        # Agrega más enlaces de video según sea necesario
+    ]
+    bucket_name = 'hackbcnai2024'  # Reemplaza con el nombre de tu bucket de Google Cloud Storage
+    main(video_urls, bucket_name)
