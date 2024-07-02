@@ -48,7 +48,7 @@ def main_indexer(folder_path):
         print(client.get_collections())
     
 
-    collection_name = "SocialEducation2"
+    collection_name = "SocialEducation"
     if environment_var.qdrant_clean == "yes":
         if client.collection_exists(collection_name):
             client.delete_collection(collection_name)
@@ -83,13 +83,13 @@ def main_indexer(folder_path):
                 continue
             
             metadata = []
-            #adding path metadata
+            #adding metadata
             for i in range(0,len(tokens)):
-                metadata.append({'filename': file_name})
-                metadata.append({'subfolders': subfolders})
+                metadata.append([{'filename': file_name},{'topics': subfolders}])
             qdrant.add_texts(tokens,metadatas=metadata)
-            print(file_name)
-    
+            print("file:" + file_name)
+            for topic in subfolders:                
+                print("topic:"+ topic)
     print("Incremental stream processing processed!")
 
 

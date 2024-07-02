@@ -30,6 +30,7 @@ environment_var.py
 *.mp4
 
 qdrant_cloud.sample
+test/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
