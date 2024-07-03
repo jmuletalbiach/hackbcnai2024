@@ -27,7 +27,7 @@ def get_input_streams(dir):
 
 def main_indexer(folder_path):
     nom_model = "sentence-transformers/msmarco-bert-base-dot-v5"
-    arguments_model = {'device': 'cpu'}
+    arguments_model = {'device': 'cuda'}
     arguments_encoder = {'normalize_embeddings': True}
     hf = HuggingFaceEmbeddings(
         model_name=nom_model,
