@@ -4,7 +4,7 @@ import requests
 import json
 st.title('Your copilot to prepare your next day at school')
 # Lista de opciones para el selector desplegable
-language_options = [ "Spanish",  "Català", "English","Français","Arab", "Italian", "Nederlandse taal"]
+language_options = [ "Spanish",  "Català", "English","Français","Arabic", "Italian", "Nederlandse taal"]
 theme_options = [ "Generic","Emotional Education",  "Gender and intersectionality", "Self-care and care for other people"]
     # Mostrar el selector desplegable
 theme_selected = st.selectbox("Select in which Theme are you focused :", theme_options)
